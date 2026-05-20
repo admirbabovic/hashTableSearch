@@ -41,13 +41,18 @@ public class CloudInfrastructure {
     public String[] getAvailableRegions () {
         return availableRegions;
     }
-
     public String[] getAvailableInstanceTypes () {
         return availableInstanceTypes;
     }
-
     public int getInstanceID () {
         return instanceID;
     }
+    public String getInstanceType() { return instanceType; }
+    public String getRegion() { return region; }
+    public String getIpAddress() { return ipAddress; }
+    public double getCpuUtilization() { return cpuUtilization; }
+    public double getRamUsageGB() { return ramUsageGB; }
+    public long getUptimeSeconds() { return uptimeSeconds; }
+    public long getCreationTimestamp() { return creationTimestamp; }
 
 }

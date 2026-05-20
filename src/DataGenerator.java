@@ -18,7 +18,8 @@ public class DataGenerator {
             int instanceID = i + 1;
             String instanceType = types[random.nextInt(typesIndexed)];
             String region = regions[random.nextInt(regionsIndexed)];
-            String ipAddress = "193.33.167." + random.nextInt(256);
+            String ipAddress = random.nextInt(256) + "." + random.nextInt(256) + "."
+                    + random.nextInt(256) + "." + random.nextInt(256);
             double cpuUtilization = random.nextDouble(100);
 
             double ramUsageGB;
@@ -39,7 +40,9 @@ public class DataGenerator {
             }
 
             long uptimeSeconds = random.nextInt(31536000);
-            long creationTimestamp = System.currentTimeMillis() * 1000 - random.nextInt(265) * 86400;
+            long currentTime = System.currentTimeMillis();
+            long timeOffset = random.nextInt(31536000);
+            long creationTimestamp = (currentTime / 1000) - timeOffset;;
 
             generatedServers[i] = new CloudInfrastructure(instanceID, instanceType, region, ipAddress, cpuUtilization,
                                                             ramUsageGB, uptimeSeconds, creationTimestamp);

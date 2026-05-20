@@ -1,20 +1,17 @@
-import java.util.ArrayList;
-import java.util.List;
-
-public class LinearProbingHashTable {
+public class DoubleHashingTable {
 
     private CloudInfrastructure[] table;
     private int capacity;
     private int size;
 
-    public LinearProbingHashTable(int capacity) {
+    public DoubleHashingTable(int capacity) {
         this.capacity = capacity;
         this.table = new CloudInfrastructure[capacity];
         this.size = 0;
     }
 
-    // Hash function
-    private int hash(String key) {
+    // Primary hash function
+    private int h1(String key) {
         int hashKey = 0;
         for (char c : key.toCharArray()) {
             hashKey = 31 * hashKey + c;
@@ -22,31 +19,47 @@ public class LinearProbingHashTable {
         return Math.abs(hashKey % capacity);
     }
 
-    // Insert with linear probing
+    // Secondary hash function - must never return 0
+    private int h2(String key) {
+        int hashKey = 0;
+        for (char c : key.toCharArray()) {
+            hashKey = 67 * hashKey + c;
+        }
+        return Math.abs(hashKey % (capacity - 1)) + 1;
+    }
+
     public boolean insert(CloudInfrastructure server) {
         if ((double) size / capacity > 0.95) return false;
 
-        int index = hash(server.getIpAddress());  // ← consistent key
-        while (table[index] != null) {
-            if (table[index].getIpAddress().equals(server.getIpAddress())) {
+        String ip = server.getIpAddress();
+        int index = h1(ip);
+        int step = h2(ip);
+        int probed = 0;
+
+        while (table[index] != null && probed < capacity) {
+            if (table[index].getIpAddress().equals(ip)) {
                 table[index] = server;
                 return true;
             }
-            index = (index + 1) % capacity;
+            probed++;
+            index = Math.abs((h1(ip) + probed * step) % capacity);
+
         }
+
         table[index] = server;
         size++;
         return true;
     }
 
-    // Search by IP
     public CloudInfrastructure searchByIp(String ipAddress) {
-        int index = hash(ipAddress);
+        int index = h1(ipAddress);
+        int step = h2(ipAddress);
         int probed = 0;
+
         while (table[index] != null && probed < capacity) {
             if (table[index].getIpAddress().equals(ipAddress)) return table[index];
-            index = (index + 1) % capacity;
             probed++;
+            index = Math.abs((h1(ipAddress) + probed * step) % capacity);
         }
         return null;
     }
