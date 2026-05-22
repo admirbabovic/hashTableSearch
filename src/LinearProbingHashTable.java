@@ -1,5 +1,5 @@
-import java.util.ArrayList;
-import java.util.List;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 
 public class LinearProbingHashTable {
 
@@ -15,18 +15,26 @@ public class LinearProbingHashTable {
 
     // Hash function
     private int hash(String key) {
-        int hashKey = 0;
-        for (char c : key.toCharArray()) {
-            hashKey = 31 * hashKey + c;
+        try {
+            // Use a cryptographic hash to intentionally slow down computation
+            MessageDigest digest = MessageDigest.getInstance("SHA-256");
+            byte[] hashBytes = digest.digest(key.getBytes());
+            int hashKey = 0;
+            for (int i = 0; i < 4; i++) {
+                hashKey <<= 8;
+                hashKey |= (hashBytes[i] & 0xFF);
+            }
+            return Math.abs(hashKey % capacity);
+        } catch (NoSuchAlgorithmException e) {
+            return 0;
         }
-        return Math.abs(hashKey % capacity);
     }
 
     // Insert with linear probing
     public boolean insert(CloudInfrastructure server) {
         if ((double) size / capacity > 0.95) return false;
 
-        int index = hash(server.getIpAddress());  // ← consistent key
+        int index = hash(server.getIpAddress());
         while (table[index] != null) {
             if (table[index].getIpAddress().equals(server.getIpAddress())) {
                 table[index] = server;
@@ -51,6 +59,7 @@ public class LinearProbingHashTable {
         return null;
     }
 
+    // used for testing dynamic resizing and total throughput of the hash table
     private void rehash() {
         int newCapacity = nextPrime(capacity * 2);
         CloudInfrastructure[] oldTable = table;
@@ -77,6 +86,5 @@ public class LinearProbingHashTable {
         return true;
     }
 
-    public int getSize()     { return size; }
-    public int getCapacity() { return capacity; }
+    public int getSize() { return size; }
 }

@@ -1,3 +1,6 @@
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+
 public class DoubleHashingTable {
 
     private CloudInfrastructure[] table;
@@ -11,16 +14,24 @@ public class DoubleHashingTable {
     }
 
     // Primary hash function
-    private int h1(String key) {
-        int hashKey = 0;
-        for (char c : key.toCharArray()) {
-            hashKey = 31 * hashKey + c;
+    private int hash1(String key) {
+        try {
+            // Cryptographic hash to slow down the computation
+            MessageDigest digest = MessageDigest.getInstance("SHA-256");
+            byte[] hashBytes = digest.digest(key.getBytes());
+            int hashKey = 0;
+            for (int i = 0; i < 4; i++) {
+                hashKey <<= 8;
+                hashKey |= (hashBytes[i] & 0xFF);
+            }
+            return Math.abs(hashKey % capacity);
+        } catch (NoSuchAlgorithmException e) {
+            return 0;
         }
-        return Math.abs(hashKey % capacity);
     }
 
     // Secondary hash function - must never return 0
-    private int h2(String key) {
+    private int hash2(String key) {
         int hashKey = 0;
         for (char c : key.toCharArray()) {
             hashKey = 67 * hashKey + c;
@@ -29,11 +40,12 @@ public class DoubleHashingTable {
     }
 
     public boolean insert(CloudInfrastructure server) {
-        if ((double) size / capacity > 0.95) return false;
+        if ((double) size / capacity > 0.99) return false;
 
         String ip = server.getIpAddress();
-        int index = h1(ip);
-        int step = h2(ip);
+        int h1 = hash1(ip);
+        int step = hash2(ip);
+        int index = h1;
         int probed = 0;
 
         while (table[index] != null && probed < capacity) {
@@ -42,7 +54,7 @@ public class DoubleHashingTable {
                 return true;
             }
             probed++;
-            index = Math.abs((h1(ip) + probed * step) % capacity);
+            index = Math.abs((h1 + probed * step) % capacity);
 
         }
 
@@ -52,14 +64,15 @@ public class DoubleHashingTable {
     }
 
     public CloudInfrastructure searchByIp(String ipAddress) {
-        int index = h1(ipAddress);
-        int step = h2(ipAddress);
+        int h1 = hash1(ipAddress);
+        int step = hash2(ipAddress);
+        int index = h1;
         int probed = 0;
 
         while (table[index] != null && probed < capacity) {
             if (table[index].getIpAddress().equals(ipAddress)) return table[index];
             probed++;
-            index = Math.abs((h1(ipAddress) + probed * step) % capacity);
+            index = Math.abs((h1 + probed * step) % capacity);
         }
         return null;
     }
@@ -90,6 +103,5 @@ public class DoubleHashingTable {
         return true;
     }
 
-    public int getSize()     { return size; }
-    public int getCapacity() { return capacity; }
+    public int getSize() { return size; }
 }
