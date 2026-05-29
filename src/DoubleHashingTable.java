@@ -1,6 +1,3 @@
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
-
 public class DoubleHashingTable {
 
     private CloudInfrastructure[] table;
@@ -15,28 +12,19 @@ public class DoubleHashingTable {
 
     // Primary hash function
     private int hash1(String key) {
-        try {
-            // Cryptographic hash to slow down the computation
-            MessageDigest digest = MessageDigest.getInstance("SHA-256");
-            byte[] hashBytes = digest.digest(key.getBytes());
-            int hashKey = 0;
-            for (int i = 0; i < 4; i++) {
-                hashKey <<= 8;
-                hashKey |= (hashBytes[i] & 0xFF);
-            }
-            return Math.abs(hashKey % capacity);
-        } catch (NoSuchAlgorithmException e) {
-            return 0;
+        int hashVal = 0;
+        for (int i = 0; i < key.length(); i++) {
+            hashVal = (hashVal * 7) + key.charAt(i);
         }
+
+        return (hashVal & 0x7FFFFFFF) % capacity;
     }
 
     // Secondary hash function - must never return 0
     private int hash2(String key) {
-        int hashKey = 0;
-        for (char c : key.toCharArray()) {
-            hashKey = 67 * hashKey + c;
-        }
-        return Math.abs(hashKey % (capacity - 1)) + 1;
+        int step = 67 - (key.hashCode() % 67);
+
+        return (Math.abs(step));
     }
 
     public boolean insert(CloudInfrastructure server) {
@@ -76,32 +64,4 @@ public class DoubleHashingTable {
         }
         return null;
     }
-
-    private void rehash() {
-        int newCapacity = nextPrime(capacity * 2);
-        CloudInfrastructure[] oldTable = table;
-        table = new CloudInfrastructure[newCapacity];
-        capacity = newCapacity;
-        size = 0;
-        for (CloudInfrastructure server : oldTable) {
-            if (server != null) insert(server);
-        }
-    }
-
-    private int nextPrime(int n) {
-        while (!isPrime(n)) n++;
-        return n;
-    }
-
-    private boolean isPrime(int n) {
-        if (n < 2) return false;
-        if (n == 2) return true;
-        if (n % 2 == 0) return false;
-        for (int i = 3; i * i <= n; i += 2) {
-            if (n % i == 0) return false;
-        }
-        return true;
-    }
-
-    public int getSize() { return size; }
 }

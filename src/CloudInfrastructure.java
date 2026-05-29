@@ -23,7 +23,8 @@ public class CloudInfrastructure {
     };
 
     public CloudInfrastructure() {
-        this(1, "N/A", "N/A", "N/A", 0, 0, 0, 0);
+        this(1, "N/A", "N/A", "N/A",
+                0, 0, 0, 0);
     }
 
     public CloudInfrastructure(int instanceID, String instanceType, String region, String ipAddress,
