@@ -13,20 +13,15 @@ public class LinearProbingHashTable {
     }
 
     // Hash function
-    private int hash(String key) {
-        int hashVal = 0;
-        for (int i = 0; i < key.length(); i++) {
-            hashVal = (hashVal * 7) + key.charAt(i);
-        }
-
-        return (hashVal & 0x7FFFFFFF) % capacity;
+    private int hash(int key) {
+        return (key & 0x7FFFFFFF) % capacity;
     }
 
     // Insert with linear probing
     public boolean insert(CloudInfrastructure server) {
         if ((double) size / capacity > 0.99) return false;
 
-        int index = hash(server.getIpAddress());
+        int index = hash(server.getInstanceID());
         while (table[index] != null) {
             if (table[index].getIpAddress().equals(server.getIpAddress())) {
                 table[index] = server;
@@ -41,11 +36,11 @@ public class LinearProbingHashTable {
     }
 
     // Search by IP
-    public CloudInfrastructure searchByIp(String ipAddress) {
-        int index = hash(ipAddress);
+    public CloudInfrastructure searchByIp(CloudInfrastructure server) {
+        int index = hash(server.getInstanceID());
         int probed = 0;
         while (table[index] != null && probed < capacity) {
-            if (table[index].getIpAddress().equals(ipAddress)) return table[index];
+            if (table[index].getIpAddress().equals(server.getIpAddress())) return table[index];
             index = (index + 1) % capacity;
             srcCol++;
             probed++;

@@ -46,4 +46,5 @@ public class CloudInfrastructure {
         return availableInstanceTypes;
     }
     public String getIpAddress() { return ipAddress; }
+    public int getInstanceID() {return instanceID; }
 }

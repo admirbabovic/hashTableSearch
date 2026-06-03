@@ -22,17 +22,12 @@ public class LinkedBFSHashTable {
         this.srcCol = 0;
     }
 
-    private int hash(String key) {
-        int hashVal = 0;
-        for (int i = 0; i < key.length(); i++) {
-            hashVal = (hashVal * 7) + key.charAt(i);
-        }
-
-        return (hashVal & 0x7FFFFFFF) % capacity;
+    private int hash(int key) {
+        return (key & 0x7FFFFFFF) % capacity;
     }
 
     public void insert(CloudInfrastructure server) {
-        int index = hash(server.getIpAddress());
+        int index = hash(server.getInstanceID());
 
         Node current = table[index];
         while (current != null) {
@@ -70,12 +65,12 @@ public class LinkedBFSHashTable {
         }
     }
 
-    public CloudInfrastructure searchByIp(String ipAddress) {
-        int index = hash(ipAddress);
+    public CloudInfrastructure searchByIp(CloudInfrastructure server) {
+        int index = hash(server.getInstanceID());
         Node current = table[index];
 
         while (current != null) {
-            if (current.server.getIpAddress().equals(ipAddress)) {
+            if (current.server.getIpAddress().equals(server.getIpAddress())) {
                 return current.server;
             }
             srcCol++;

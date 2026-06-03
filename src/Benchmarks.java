@@ -24,7 +24,7 @@ public class Benchmarks {
 
         LinearProbingHashTable warmup = new LinearProbingHashTable(INITIAL_CAPACITY);
         for (int i = 0; i < 5000; i++) warmup.insert(datacenter[i]);
-        for (int i = 0; i < 5000; i++) warmup.searchByIp(datacenter[random.nextInt(5000)].getIpAddress());
+        for (int i = 0; i < 5000; i++) warmup.searchByIp(datacenter[random.nextInt(5000)]);
 
         for (int index = 0; index < INSERT_SIZE.length; index++) {
             int load = INSERT_SIZE[index];
@@ -50,13 +50,12 @@ public class Benchmarks {
             for (int run = 0; run < TOTAL_RUNS; run++) {
                 long totalSearchTime = 0;
                 for (int i = 0; i < hitRounds; i++) {
-                    String ip = datacenter[random.nextInt(load)].getIpAddress();
-                    long s = System.nanoTime(); lpTable.searchByIp(ip);
+                    long s = System.nanoTime();
+                    lpTable.searchByIp(datacenter[random.nextInt(load)]);
                     totalSearchTime += System.nanoTime() - s;
                 }
                 for (int i = 0; i < missRounds; i++) {
-                    String ip = datacenter[load + random.nextInt(SERVER_COUNT - load)].getIpAddress();
-                    long s = System.nanoTime(); lpTable.searchByIp(ip);
+                    long s = System.nanoTime(); lpTable.searchByIp(datacenter[load + random.nextInt(SERVER_COUNT - load)]);
                     totalSearchTime += System.nanoTime() - s;
                 }
                 runResults[run] = totalSearchTime / (double) searchRounds;
@@ -85,7 +84,7 @@ public class Benchmarks {
 
         DoubleHashingTable warmup = new DoubleHashingTable(INITIAL_CAPACITY);
         for (int i = 0; i < 5000; i++) warmup.insert(datacenter[i]);
-        for (int i = 0; i < 5000; i++) warmup.searchByIp(datacenter[random.nextInt(5000)].getIpAddress());
+        for (int i = 0; i < 5000; i++) warmup.searchByIp(datacenter[random.nextInt(5000)]);
 
         for (int index = 0; index < INSERT_SIZE.length; index++) {
             int load = INSERT_SIZE[index];
@@ -110,13 +109,11 @@ public class Benchmarks {
             for (int run = 0; run < TOTAL_RUNS; run++) {
                 long totalSearchTime = 0;
                 for (int i = 0; i < hitRounds; i++) {
-                    String ip = datacenter[random.nextInt(load)].getIpAddress();
-                    long s = System.nanoTime(); dhTable.searchByIp(ip);
+                    long s = System.nanoTime(); dhTable.searchByIp(datacenter[random.nextInt(load)]);
                     totalSearchTime += System.nanoTime() - s;
                 }
                 for (int i = 0; i < missRounds; i++) {
-                    String ip = datacenter[load + random.nextInt(SERVER_COUNT - load)].getIpAddress();
-                    long s = System.nanoTime(); dhTable.searchByIp(ip);
+                    long s = System.nanoTime(); dhTable.searchByIp(datacenter[load + random.nextInt(SERVER_COUNT - load)]);
                     totalSearchTime += System.nanoTime() - s;
                 }
                 runResults[run] = totalSearchTime / (double) searchRounds;
@@ -146,7 +143,7 @@ public class Benchmarks {
         LinkedBFSHashTable warmup = new LinkedBFSHashTable(INITIAL_CAPACITY);
         for (int i = 0; i < 5000; i++) warmup.insert(datacenter[i]);
         warmup.buildBridges();
-        for (int i = 0; i < 5000; i++) warmup.searchByIp(datacenter[random.nextInt(5000)].getIpAddress());
+        for (int i = 0; i < 5000; i++) warmup.searchByIp(datacenter[random.nextInt(5000)]);
 
         for (int index = 0; index < INSERT_SIZE.length; index++) {
             int load = INSERT_SIZE[index];
@@ -172,13 +169,11 @@ public class Benchmarks {
             for (int run = 0; run < TOTAL_RUNS; run++) {
                 long totalSearchTime = 0;
                 for (int i = 0; i < hitRounds; i++) {
-                    String ip = datacenter[random.nextInt(load)].getIpAddress();
-                    long s = System.nanoTime(); bfsTable.searchByIp(ip);
+                    long s = System.nanoTime(); bfsTable.searchByIp(datacenter[random.nextInt(load)]);
                     totalSearchTime += System.nanoTime() - s;
                 }
                 for (int i = 0; i < missRounds; i++) {
-                    String ip = datacenter[load + random.nextInt(SERVER_COUNT - load)].getIpAddress();
-                    long s = System.nanoTime(); bfsTable.searchByIp(ip);
+                    long s = System.nanoTime(); bfsTable.searchByIp(datacenter[load + random.nextInt(SERVER_COUNT - load)]);
                     totalSearchTime += System.nanoTime() - s;
                 }
                 runResults[run] = totalSearchTime / (double) searchRounds;
@@ -236,13 +231,14 @@ public class Benchmarks {
 
             System.out.printf(
                     "%-" + WL + "s ││ " +
-                            "%-" + WT + "s │ %-" + WC + "d │ %-" + WT + "s │ %-" + WC + "d ││ " + // Linear Probing
-                            "%-" + WT + "s │ %-" + WC + "d │ %-" + WT + "s │ %-" + WC + "d ││ " + // Double Hashing
-                            "%-" + WT + "s │ %-" + WC + "d │ %-" + WT + "s │ %-" + WC + "d%n",   // Linked BFS
+                            "%-" + WT + "s │ %-" + WC + "s │ %-" + WT + "s │ %-" + WC + "s ││ " + // Linear Probing
+                            "%-" + WT + "s │ %-" + WC + "s │ %-" + WT + "s │ %-" + WC + "s ││ " + // Double Hashing
+                            "%-" + WT + "s │ %-" + WC + "s │ %-" + WT + "s │ %-" + WC + "s%n",   // Linked BFS
                     loadPercents[i] + "%",
-                    fmt(liIns), lpInsCol, fmt(liSrch), lpSrchCols,
-                    fmt(dhIns), dhInsCol, fmt(dhSrch), dhSrchCols,
-                    fmt(bIns),  bfsInsCol,  fmt(bSrch),  bfsSrchCol);
+                    fmt(liIns), fmtInt(lpInsCol), fmt(liSrch), fmtInt(lpSrchCols),
+                    fmt(dhIns), fmtInt(dhInsCol), fmt(dhSrch), fmtInt(dhSrchCols),
+                    fmt(bIns),  fmtInt(bfsInsCol),  fmt(bSrch),  fmtInt(bfsSrchCol)
+            );
         }
 
         System.out.println(sep);
@@ -250,6 +246,10 @@ public class Benchmarks {
 
     private static String fmt(double v) {
         return String.format(Locale.US, "%,.4f", v);
+    }
+
+    private static String fmtInt(int v) {
+        return String.format(Locale.US, "%,d", v);
     }
 
     private static String center(String s, int width) {
