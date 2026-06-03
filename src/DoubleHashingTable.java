@@ -2,12 +2,14 @@ public class DoubleHashingTable {
 
     private CloudInfrastructure[] table;
     private int capacity;
-    private int size;
+    private int size, insCol, srcCol;
 
     public DoubleHashingTable(int capacity) {
         this.capacity = capacity;
         this.table = new CloudInfrastructure[capacity];
         this.size = 0;
+        this.insCol = 0;
+        this.srcCol = 0;
     }
 
     // Primary hash function
@@ -41,6 +43,7 @@ public class DoubleHashingTable {
                 table[index] = server;
                 return true;
             }
+            insCol++;
             probed++;
             index = Math.abs((h1 + probed * step) % capacity);
 
@@ -60,8 +63,25 @@ public class DoubleHashingTable {
         while (table[index] != null && probed < capacity) {
             if (table[index].getIpAddress().equals(ipAddress)) return table[index];
             probed++;
+            srcCol++;
             index = Math.abs((h1 + probed * step) % capacity);
         }
         return null;
+    }
+
+    public int getInsCol() {
+        return this.insCol;
+    }
+
+    public void setInsCol() {
+        this.insCol = 0;
+    }
+
+    public int getSrcCol() {
+        return this.srcCol;
+    }
+
+    public void setSrcCol() {
+        this.srcCol = 0;
     }
 }

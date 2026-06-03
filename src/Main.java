@@ -2,7 +2,7 @@ import java.util.Random;
 
 public class Main {
     // Prime numbers for testing: 10009, 100019, 1000003, 2000003, 3000017, 5000011
-    private static final int SERVER_COUNT = 1000003;
+    private static final int SERVER_COUNT = 100019;
     private static final int INITIAL_CAPACITY = SERVER_COUNT;
 
     public static void main(String[] args) {

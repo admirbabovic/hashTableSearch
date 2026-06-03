@@ -9,7 +9,7 @@ public class Benchmarks {
     private static double[] dhSearch;
     private static double[] bfsInsert;
     private static double[] bfsSearch;
-    private static int[] loadPercents;
+    private static int[] loadPercents, lpInsertCollisions, lpSearchCollisions, dhInsertCollisions, dhSearchCollisions, bfsInsertCollisions, bfsSearchCollisions;
     private static final int TOTAL_RUNS = 5;
     private static final int DROP_FIRST = 2;
 
@@ -18,6 +18,8 @@ public class Benchmarks {
 
         lpInsert = new double[INSERT_SIZE.length];
         lpSearch = new double[INSERT_SIZE.length];
+        lpInsertCollisions = new int[INSERT_SIZE.length];
+        lpSearchCollisions = new int[INSERT_SIZE.length];
         loadPercents = new int[INSERT_SIZE.length];
 
         LinearProbingHashTable warmup = new LinearProbingHashTable(INITIAL_CAPACITY);
@@ -31,10 +33,15 @@ public class Benchmarks {
             LinearProbingHashTable lpTable = new LinearProbingHashTable(INITIAL_CAPACITY);
 
             long insertStart = System.nanoTime();
-            for (int i = 0; i < load; i++) lpTable.insert(datacenter[i]);
+            for (int i = 0; i < load; i++) {
+                lpTable.insert(datacenter[i]);
+            }
             lpInsert[index] = (System.nanoTime() - insertStart) / (double) 1000000;
+            lpInsertCollisions[index] = lpTable.getInsCol();
+            lpTable.setInsCol();
             
             double[] runResults = new double[TOTAL_RUNS];
+            int[] runCollisions = new int[TOTAL_RUNS];
 
             int searchRounds = Math.max(load / 10, 10000);
             int hitRounds = searchRounds / 2;
@@ -53,8 +60,13 @@ public class Benchmarks {
                     totalSearchTime += System.nanoTime() - s;
                 }
                 runResults[run] = totalSearchTime / (double) searchRounds;
+                runCollisions[run] = lpTable.getSrcCol();
+                lpTable.setSrcCol();
             }
 
+            int sumCollisions = 0;
+            for (int i = DROP_FIRST; i < TOTAL_RUNS; i++) sumCollisions += runCollisions[i];
+            lpSearchCollisions[index] = sumCollisions / (TOTAL_RUNS - DROP_FIRST);
             double sum = 0;
             for (int i = DROP_FIRST; i < TOTAL_RUNS; i++) sum += runResults[i];
             lpSearch[index] = sum / (TOTAL_RUNS - DROP_FIRST);
@@ -68,6 +80,8 @@ public class Benchmarks {
 
         dhInsert = new double[INSERT_SIZE.length];
         dhSearch = new double[INSERT_SIZE.length];
+        dhInsertCollisions = new int[INSERT_SIZE.length];
+        dhSearchCollisions = new int[INSERT_SIZE.length];
 
         DoubleHashingTable warmup = new DoubleHashingTable(INITIAL_CAPACITY);
         for (int i = 0; i < 5000; i++) warmup.insert(datacenter[i]);
@@ -79,10 +93,15 @@ public class Benchmarks {
             DoubleHashingTable dhTable = new DoubleHashingTable(INITIAL_CAPACITY);
 
             long insertStart = System.nanoTime();
-            for (int i = 0; i < load; i++) dhTable.insert(datacenter[i]);
+            for (int i = 0; i < load; i++) {
+                dhTable.insert(datacenter[i]);
+            }
             dhInsert[index] = (System.nanoTime() - insertStart) / (double) 1000000;
-            
+            dhInsertCollisions[index] = dhTable.getInsCol();
+            dhTable.setInsCol();
+
             double[] runResults = new double[TOTAL_RUNS];
+            int[] runCollisions = new int[TOTAL_RUNS];
 
             int searchRounds = Math.max(load / 10, 10000);
             int hitRounds = searchRounds / 2;
@@ -101,8 +120,13 @@ public class Benchmarks {
                     totalSearchTime += System.nanoTime() - s;
                 }
                 runResults[run] = totalSearchTime / (double) searchRounds;
+                runCollisions[run] = dhTable.getSrcCol();
+                dhTable.setSrcCol();
             }
 
+            int sumCollisions = 0;
+            for (int i = DROP_FIRST; i < TOTAL_RUNS; i++) sumCollisions += runCollisions[i];
+            dhSearchCollisions[index] = sumCollisions / (TOTAL_RUNS - DROP_FIRST);
             double sum = 0;
             for (int i = DROP_FIRST; i < TOTAL_RUNS; i++) sum += runResults[i];
             dhSearch[index] = sum / (TOTAL_RUNS - DROP_FIRST);
@@ -116,6 +140,8 @@ public class Benchmarks {
 
         bfsInsert = new double[INSERT_SIZE.length];
         bfsSearch = new double[INSERT_SIZE.length];
+        bfsInsertCollisions = new int[INSERT_SIZE.length];
+        bfsSearchCollisions = new int[INSERT_SIZE.length];
 
         LinkedBFSHashTable warmup = new LinkedBFSHashTable(INITIAL_CAPACITY);
         for (int i = 0; i < 5000; i++) warmup.insert(datacenter[i]);
@@ -128,11 +154,16 @@ public class Benchmarks {
             LinkedBFSHashTable bfsTable = new LinkedBFSHashTable(INITIAL_CAPACITY);
 
             long insertStart = System.nanoTime();
-            for (int i = 0; i < load; i++) bfsTable.insert(datacenter[i]);
+            for (int i = 0; i < load; i++) {
+                bfsTable.insert(datacenter[i]);
+            }
             bfsTable.buildBridges();
             bfsInsert[index] = (System.nanoTime() - insertStart) / (double) 1000000;
+            bfsInsertCollisions[index] = bfsTable.getInsCol();
+            bfsTable.setInsCol();
             
             double[] runResults = new double[TOTAL_RUNS];
+            int[] runCollisions = new int[TOTAL_RUNS];
 
             int searchRounds = Math.max(load / 10, 10000);
             int hitRounds = searchRounds / 2;
@@ -151,8 +182,13 @@ public class Benchmarks {
                     totalSearchTime += System.nanoTime() - s;
                 }
                 runResults[run] = totalSearchTime / (double) searchRounds;
+                runCollisions[run] = bfsTable.getSrcCol();
+                bfsTable.setSrcCol();
             }
 
+            int sumCollisions = 0;
+            for (int i = DROP_FIRST; i < TOTAL_RUNS; i++) sumCollisions += runCollisions[i];
+            bfsSearchCollisions[index] = sumCollisions / (TOTAL_RUNS - DROP_FIRST);
             double sum = 0;
             for (int i = DROP_FIRST; i < TOTAL_RUNS; i++) sum += runResults[i];
             bfsSearch[index] = sum / (TOTAL_RUNS - DROP_FIRST);
@@ -163,36 +199,50 @@ public class Benchmarks {
 
     public static void printResultsTable() {
         final int WL = 6;
-        final int WV = 13;
+        final int WT = 13;
+        final int WC = 19;
 
-        int algoW  = WV + 3 + WV;
+        // New width per algorithm: Time + " │ " + Cols + " │ " + Time + " │ " + Cols
+        int algoW  = WT + 3 + WC + 3 + WT + 3 + WC;
 
         int totalW = WL + (3 + algoW) * 3;
         String sep = "─".repeat(totalW);
 
         // algorithm names
-        System.out.printf("%-" + WL + "s │ %-" + algoW + "s │ %-" + algoW + "s │ %-" + algoW + "s%n", "Load",
+        System.out.printf("%-" + WL + "s ││ %-" + algoW + "s ││ %-" + algoW + "s ││ %-" + algoW + "s%n", "Load",
                 center("Linear Probing", algoW),
                 center("Double Hashing", algoW),
                 center("Linked BFS", algoW));
 
-        // subcolumn names
-        String algoSub = String.format("%-" + WV + "s │ %-" + WV + "s", "Insert (ms)", "Search (ns)");
-        System.out.printf("%-" + WL + "s │ %s │ %s │ %s%n", "", algoSub, algoSub, algoSub);
+        // Subcolumn names row (algoSub handles internal single pipes, printf handles the ││ before them)
+        String algoSub = String.format("%-" + WT + "s │ %-" + WC + "s │ %-" + WT + "s │ %-" + WC + "s",
+                "Insert (ms)", "Insert (collisions)", "Search (ns)", "Search (collisions)");
+
+        System.out.printf("%-" + WL + "s ││ %s ││ %s ││ %s%n", "", algoSub, algoSub, algoSub);
 
         System.out.println(sep);
 
         // data rows
         for (int i = 0; i < loadPercents.length; i++) {
+            // Time variables
             double liIns = lpInsert[i], liSrch = lpSearch[i];
             double dhIns = dhInsert[i], dhSrch = dhSearch[i];
             double bIns = bfsInsert[i], bSrch  = bfsSearch[i];
 
+            // Collision variables (ints)
+            int lpInsCol = lpInsertCollisions[i], lpSrchCols = lpSearchCollisions[i];
+            int dhInsCol = dhInsertCollisions[i], dhSrchCols = dhSearchCollisions[i];
+            int bfsInsCol = bfsInsertCollisions[i], bfsSrchCol = bfsSearchCollisions[i];
+
             System.out.printf(
-                    "%-" + WL + "s │ %-" + WV + "s │ %-" + WV + "s │ %-" + WV + "s │ %-" + WV + "s │ %-" + WV + "s │ %-" + WV + "s%n", loadPercents[i] + "%",
-                    fmt(liIns), fmt(liSrch),
-                    fmt(dhIns), fmt(dhSrch),
-                    fmt(bIns),  fmt(bSrch));
+                    "%-" + WL + "s ││ " +
+                            "%-" + WT + "s │ %-" + WC + "d │ %-" + WT + "s │ %-" + WC + "d ││ " + // Linear Probing
+                            "%-" + WT + "s │ %-" + WC + "d │ %-" + WT + "s │ %-" + WC + "d ││ " + // Double Hashing
+                            "%-" + WT + "s │ %-" + WC + "d │ %-" + WT + "s │ %-" + WC + "d%n",   // Linked BFS
+                    loadPercents[i] + "%",
+                    fmt(liIns), lpInsCol, fmt(liSrch), lpSrchCols,
+                    fmt(dhIns), dhInsCol, fmt(dhSrch), dhSrchCols,
+                    fmt(bIns),  bfsInsCol,  fmt(bSrch),  bfsSrchCol);
         }
 
         System.out.println(sep);

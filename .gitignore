@@ -32,3 +32,8 @@ bin/
 .DS_Store
 
 build/
+*.png
+*.pdf
+*.sh
+*.ipynb
+*.py
