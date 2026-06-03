@@ -236,13 +236,14 @@ public class Benchmarks {
 
             System.out.printf(
                     "%-" + WL + "s ││ " +
-                            "%-" + WT + "s │ %-" + WC + "d │ %-" + WT + "s │ %-" + WC + "d ││ " + // Linear Probing
-                            "%-" + WT + "s │ %-" + WC + "d │ %-" + WT + "s │ %-" + WC + "d ││ " + // Double Hashing
-                            "%-" + WT + "s │ %-" + WC + "d │ %-" + WT + "s │ %-" + WC + "d%n",   // Linked BFS
+                            "%-" + WT + "s │ %-" + WC + "s │ %-" + WT + "s │ %-" + WC + "s ││ " + // Linear Probing
+                            "%-" + WT + "s │ %-" + WC + "s │ %-" + WT + "s │ %-" + WC + "s ││ " + // Double Hashing
+                            "%-" + WT + "s │ %-" + WC + "s │ %-" + WT + "s │ %-" + WC + "s%n",   // Linked BFS
                     loadPercents[i] + "%",
-                    fmt(liIns), lpInsCol, fmt(liSrch), lpSrchCols,
-                    fmt(dhIns), dhInsCol, fmt(dhSrch), dhSrchCols,
-                    fmt(bIns),  bfsInsCol,  fmt(bSrch),  bfsSrchCol);
+                    fmt(liIns), fmtInt(lpInsCol), fmt(liSrch), fmtInt(lpSrchCols),
+                    fmt(dhIns), fmtInt(dhInsCol), fmt(dhSrch), fmtInt(dhSrchCols),
+                    fmt(bIns),  fmtInt(bfsInsCol),  fmt(bSrch),  fmtInt(bfsSrchCol)
+            );
         }
 
         System.out.println(sep);
@@ -250,6 +251,10 @@ public class Benchmarks {
 
     private static String fmt(double v) {
         return String.format(Locale.US, "%,.4f", v);
+    }
+
+    private static String fmtInt(int v) {
+        return String.format(Locale.US, "%,d", v);
     }
 
     private static String center(String s, int width) {
