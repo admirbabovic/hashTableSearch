@@ -1,3 +1,6 @@
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.PrintWriter;
 import java.util.Random;
 import java.util.Locale;
 
@@ -258,5 +261,41 @@ public class Benchmarks {
         int left = pad / 2;
         int right = pad - left;
         return " ".repeat(left) + s + " ".repeat(right);
+    }
+
+    public static void dataExport () {
+        String csvFileName = "data.csv";
+
+        try (PrintWriter writer = new PrintWriter(new File(csvFileName))) {
+
+            writer.println("Load_percent,LP_insert_ms,LP_insert_cols,LP_search_ns,LP_search_col," +
+                    "DH_insert_ms,DH_insert_cols,DH_search_ns,DH_search_col," +
+                    "BFS_insert_ms,BFS_insert_cols,BFS_search_ns,BFS_search_col");
+
+            for (int i = 0; i < loadPercents.length; i++) {
+                String row = String.format("%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s",
+                        loadPercents[i],
+                        lpInsert[i],
+                        lpInsertCollisions[i],
+                        lpSearch[i],
+                        lpSearchCollisions[i],
+                        dhInsert[i],
+                        dhInsertCollisions[i],
+                        dhSearch[i],
+                        dhSearchCollisions[i],
+                        bfsInsert[i],
+                        bfsInsertCollisions[i],
+                        bfsSearch[i],
+                        bfsSearchCollisions[i]
+                );
+
+                writer.println(row);
+            }
+
+            System.out.println("CSV file created successfully at: " + new File(csvFileName).getAbsolutePath());
+
+        } catch (FileNotFoundException e) {
+            System.err.println("Error writing to file: " + e.getMessage());
+        }
     }
 }

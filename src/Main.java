@@ -24,6 +24,7 @@ public class Main {
         Benchmarks.doubleHashing(datacenter, random, INITIAL_CAPACITY, INSERT_SIZE, SERVER_COUNT);
         Benchmarks.benchmarkBFS(datacenter, random, INITIAL_CAPACITY, INSERT_SIZE, SERVER_COUNT);
         Benchmarks.printResultsTable();
+        Benchmarks.dataExport();
     }
 
 }
