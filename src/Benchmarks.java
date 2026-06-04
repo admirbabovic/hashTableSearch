@@ -26,8 +26,8 @@ public class Benchmarks {
         loadPercents = new int[INSERT_SIZE.length];
 
         LinearProbingHashTable warmup = new LinearProbingHashTable(INITIAL_CAPACITY);
-        for (int i = 0; i < 5000; i++) warmup.insert(datacenter[i]);
-        for (int i = 0; i < 5000; i++) warmup.searchByIp(datacenter[random.nextInt(5000)].getIpAddress());
+        for (int i = 0; i < 10000; i++) warmup.insert(datacenter[i]);
+        for (int i = 0; i < 10000; i++) warmup.searchByIp(datacenter[random.nextInt(5000)].getIpAddress());
 
         for (int index = 0; index < INSERT_SIZE.length; index++) {
             int load = INSERT_SIZE[index];
@@ -87,8 +87,8 @@ public class Benchmarks {
         dhSearchCollisions = new int[INSERT_SIZE.length];
 
         DoubleHashingTable warmup = new DoubleHashingTable(INITIAL_CAPACITY);
-        for (int i = 0; i < 5000; i++) warmup.insert(datacenter[i]);
-        for (int i = 0; i < 5000; i++) warmup.searchByIp(datacenter[random.nextInt(5000)].getIpAddress());
+        for (int i = 0; i < 10000; i++) warmup.insert(datacenter[i]);
+        for (int i = 0; i < 10000; i++) warmup.searchByIp(datacenter[random.nextInt(5000)].getIpAddress());
 
         for (int index = 0; index < INSERT_SIZE.length; index++) {
             int load = INSERT_SIZE[index];
@@ -147,9 +147,9 @@ public class Benchmarks {
         bfsSearchCollisions = new int[INSERT_SIZE.length];
 
         LinkedBFSHashTable warmup = new LinkedBFSHashTable(INITIAL_CAPACITY);
-        for (int i = 0; i < 5000; i++) warmup.insert(datacenter[i]);
+        for (int i = 0; i < 10000; i++) warmup.insert(datacenter[i]);
         warmup.buildBridges();
-        for (int i = 0; i < 5000; i++) warmup.searchByIp(datacenter[random.nextInt(5000)].getIpAddress());
+        for (int i = 0; i < 10000; i++) warmup.searchByIp(datacenter[random.nextInt(5000)].getIpAddress());
 
         for (int index = 0; index < INSERT_SIZE.length; index++) {
             int load = INSERT_SIZE[index];
@@ -203,7 +203,7 @@ public class Benchmarks {
     public static void printResultsTable() {
         final int WL = 6;
         final int WT = 13;
-        final int WC = 19;
+        final int WC = 15;
 
         // New width per algorithm: Time + " │ " + Cols + " │ " + Time + " │ " + Cols
         int algoW  = WT + 3 + WC + 3 + WT + 3 + WC;
@@ -219,7 +219,7 @@ public class Benchmarks {
 
         // Subcolumn names row (algoSub handles internal single pipes, printf handles the ││ before them)
         String algoSub = String.format("%-" + WT + "s │ %-" + WC + "s │ %-" + WT + "s │ %-" + WC + "s",
-                "Insert (ms)", "Insert (collisions)", "Search (ns)", "Search (collisions)");
+                "Insert (ms)", "Insert (coll.)", "Search (ns)", "Search (coll.)");
 
         System.out.printf("%-" + WL + "s ││ %s ││ %s ││ %s%n", "", algoSub, algoSub, algoSub);
 
