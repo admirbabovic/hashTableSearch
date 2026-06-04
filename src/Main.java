@@ -1,11 +1,16 @@
 import java.util.Random;
+import java.util.Scanner;
 
 public class Main {
     // Prime numbers for testing: 10009, 100019, 1000003, 2000003, 3000017, 5000011
-    private static final int SERVER_COUNT = 100019;
-    private static final int INITIAL_CAPACITY = SERVER_COUNT;
+    private static int SERVER_COUNT;
+    private static int INITIAL_CAPACITY;
 
     public static void main(String[] args) {
+        Scanner input = new Scanner(System.in);
+        System.out.println("Input hash table size");
+        System.out.println("Recommended values: 10009, 100019, 500009, 1000003, 2000003");
+        System.out.print("SIZE: ");
         DataGenerator generator = new DataGenerator();
         CloudInfrastructure[] datacenter = generator.generateRandomData(SERVER_COUNT);
         Random random = new Random();
