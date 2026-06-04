@@ -214,7 +214,7 @@ public class Benchmarks {
 
         // Subcolumn names row (algoSub handles internal single pipes, printf handles the ││ before them)
         String algoSub = String.format("%-" + WT + "s │ %-" + WC + "s │ %-" + WT + "s │ %-" + WC + "s",
-                "Insert (ms)", "Insert (collisions)", "Search (ns)", "Search (collisions)");
+                "Insert (ms)", "Insert (coll.)", "Search (ns)", "Search (coll.)");
 
         System.out.printf("%-" + WL + "s ││ %s ││ %s ││ %s%n", "", algoSub, algoSub, algoSub);
 

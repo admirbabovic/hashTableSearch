@@ -11,6 +11,8 @@ public class Main {
         System.out.println("Input hash table size");
         System.out.println("Recommended values: 10009, 100019, 500009, 1000003, 2000003");
         System.out.print("SIZE: ");
+        SERVER_COUNT = input.nextInt();
+        INITIAL_CAPACITY = SERVER_COUNT;
         DataGenerator generator = new DataGenerator();
         CloudInfrastructure[] datacenter = generator.generateRandomData(SERVER_COUNT);
         Random random = new Random();
