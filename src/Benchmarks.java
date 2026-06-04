@@ -271,17 +271,13 @@ public class Benchmarks {
     public static void dataExport () {
         String csvFileName = "data.csv";
 
-        try (PrintWriter writer = new PrintWriter(new File(csvFileName))) {
+        try (PrintWriter writer = new PrintWriter(csvFileName)) {
 
-            // Optional: Write the CSV header
             writer.println("Load_percent,LP_insert_ms,LP_insert_cols,LP_search_ns,LP_search_col," +
                     "DH_insert_ms,DH_insert_cols,DH_search_ns,DH_search_col," +
                     "BFS_insert_ms,BFS_insert_cols,BFS_search_ns,BFS_search_col");
 
-            // Iterate through the arrays and write each row
             for (int i = 0; i < loadPercents.length; i++) {
-                // Construct the row string
-                // Note: If your data might contain commas, wrap the variable in quotes
                 String row = String.format("%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s",
                         loadPercents[i],
                         lpInsert[i],
